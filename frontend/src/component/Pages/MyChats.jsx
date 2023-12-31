@@ -21,7 +21,7 @@ export default function MyChats({fetchAgain}) {
         }
       }
 
-      const { data } = await axios.get("http://localhost:5000/chat/fetchChat", config);
+      const { data } = await axios.get("https://chat-again.onrender.com/chat/fetchChat", config);
       setChats(data);
       console.log(data)
 

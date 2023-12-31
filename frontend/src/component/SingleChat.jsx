@@ -15,7 +15,7 @@ import animation from "../animation/animation.json"
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./Pages/UpdateGroupChatModal";
 import { ChatState } from "./Context/ChatProvider";
-const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+const ENDPOINT = "https://chat-again.onrender.com"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -51,7 +51,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-        `http://localhost:5000/message/${selectedChat._id}`,
+        `https://chat-again.onrender.com/message/${selectedChat._id}`,
         config
       );
       setMessages(data);
@@ -82,7 +82,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "http://localhost:5000/message",
+          "https://chat-again.onrender.com/message",
           {
             content: newMessage,
             chatId: selectedChat,

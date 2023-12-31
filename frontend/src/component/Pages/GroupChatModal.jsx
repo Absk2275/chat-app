@@ -31,7 +31,7 @@ export default function GroupChatModal({ children }) {
                     Authorization: `Bearer ${user.token}`
                 }
             }
-            const { data } = await axios.get(`http://localhost:5000/user/alluser?search=${search}`, config);
+            const { data } = await axios.get(`https://chat-again.onrender.com/user/alluser?search=${search}`, config);
 
             setLoading(false);
             setSearchResult(data);

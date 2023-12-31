@@ -32,7 +32,7 @@ export default function Login() {
                         "Content-type" :"application/json", 
                     }
                 };
-                const {data} = await axios.post("http://localhost:5000/user/login",{email,password}, config);
+                const {data} = await axios.post("https://chat-again.onrender.com/user/login",{email,password}, config);
                 toast({
                     title: "Login Success",
                     status: "success",

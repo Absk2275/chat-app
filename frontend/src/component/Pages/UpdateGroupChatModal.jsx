@@ -38,7 +38,7 @@ export default function UpdateGroupChatModal({ fetchAgain, setFetchAgain, fetchM
             },
           };
           const { data } = await axios.put(
-            `http://localhost:5000/chat/removeFromGroup`,
+            `https://chat-again.onrender.com/chat/removeFromGroup`,
             {
               chatId: selectedChat._id,
               userId: user1._id,

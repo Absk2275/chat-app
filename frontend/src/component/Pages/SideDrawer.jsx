@@ -41,7 +41,7 @@ export default function SideDrawer() {
         }
       }
 
-      const { data } = await axios.get(`http://localhost:5000/user/alluser?search=${search}`, config);
+      const { data } = await axios.get(`https://chat-again.onrender.com/user/alluser?search=${search}`, config);
 
       setSearchResult(data);
       setLoading(false);
@@ -67,7 +67,7 @@ export default function SideDrawer() {
             Authorization: `Bearer ${user.token}`
           }
         }
-        const {data} = await axios.post("http://localhost:5000/chat/accessChat", {userId}, config);
+        const {data} = await axios.post("https://chat-again.onrender.com/chat/accessChat", {userId}, config);
         if(!chats.find((c)=>c._id===data._id )){
           setChats([data, ...chats]);
         }

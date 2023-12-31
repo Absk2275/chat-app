@@ -94,7 +94,7 @@ export default function Signup() {
                     }
                 };
 
-                const {data} = await axios.post("http://localhost:5000/user/register",{name,email,password,pic}, config);
+                const {data} = await axios.post("https://chat-again.onrender.com/user/register",{name,email,password,pic}, config);
              
                
                     toast({
