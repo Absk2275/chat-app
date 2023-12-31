@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300&family=Lexend+Deca&family=Montserrat:wght@300;400&family=Open+Sans&family=Poppins&family=Roboto:wght@300&display=swap');
+
+.App{
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    background-color: aqua;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(136, 136, 136, 0.281);
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
