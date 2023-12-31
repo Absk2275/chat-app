@@ -2,7 +2,7 @@ import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import "./Styles.css";
-import { IconButton, Spinner, useToast } from "@chakra-ui/react";
+import { IconButton, Spinner, useToast, InputGroup, InputRightElement, Button } from "@chakra-ui/react";
 import { getSender, getSenderFull } from '../config/ChatsLogics';
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -15,7 +15,7 @@ import animation from "../animation/animation.json"
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./Pages/UpdateGroupChatModal";
 import { ChatState } from "./Context/ChatProvider";
-const ENDPOINT = "https://chat-again.onrender.com"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -51,7 +51,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-        `https://chat-again.onrender.com/message/${selectedChat._id}`,
+        `http://localhost:5000/message/${selectedChat._id}`,
         config
       );
       setMessages(data);
@@ -71,7 +71,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const sendMessage = async (event) => {
-    if (event.key === "Enter" && newMessage) {
+    if ((event && event.key === "Enter" && newMessage) || !event) {
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -82,7 +82,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
         setNewMessage("");
         const { data } = await axios.post(
-          "https://chat-again.onrender.com/message",
+          "http://localhost:5000/message",
           {
             content: newMessage,
             chatId: selectedChat,
@@ -104,6 +104,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
@@ -120,7 +121,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     selectedChatCompare = selectedChat;
     // eslint-disable-next-line
   }, [selectedChat]);
-  
+
 
   useEffect(() => {
     const handleNewMessage = (newMessageRecieved) => {
@@ -136,25 +137,25 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMessages((prevMessages) => [...prevMessages, newMessageRecieved]);
       }
     };
-  
+
     socket.on("message recieved", handleNewMessage);
-  
+
     // Cleanup function
     return () => {
       socket.off("message recieved", handleNewMessage);
     };
   }, [selectedChatCompare, notification, fetchAgain, setNotification]);
-  
+
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-  
+
     if (!socketConnected) return;
-  
+
     if (!typing) {
       setTyping(true);
       socket.emit("typing", selectedChat._id);
     }
-  
+
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;
     setTimeout(() => {
@@ -167,7 +168,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }, timerLength);
   };
-  
+
 
   const defaultOptions = {
     loop: true,
@@ -178,72 +179,81 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  
+
 
   return (
     <>
-     {
-        selectedChat? 
-        (<>
-        <Text fontSize={{base:"28px", md:"30px"}}
-        pb={3} px={2} w="100%" display="flex"
-        justifyContent={{base:"space-between"}}
-        alignItems='center'>
-        
-            <IconButton display={{base:"flex", md:"none" }} icon={<ArrowBackIcon/>} 
-            onClick={()=>setSelectedChat("")} />
-            {!selectedChat.isGroupChat ? (
+      {
+        selectedChat ?
+          (<>
+            <Text fontSize={{ base: "28px", md: "30px" }}
+              pb={3} px={2} w="100%" display="flex"
+              justifyContent={{ base: "space-between" }}
+              alignItems='center'>
+
+              <IconButton display={{ base: "flex", md: "none" }} icon={<ArrowBackIcon />}
+                onClick={() => setSelectedChat("")} />
+              {!selectedChat.isGroupChat ? (
                 <>
-                    {getSender(user, selectedChat.users)}
-                    <ProfileModal user={getSenderFull(user, selectedChat.users)}/>
+                  {getSender(user, selectedChat.users)}
+                  <ProfileModal user={getSenderFull(user, selectedChat.users)} />
                 </>
-            ):(
+              ) : (
                 <>{selectedChat.chatName.toUpperCase()}
-                <UpdateGroupChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} fetchMessages={fetchMessages}/>
+                  <UpdateGroupChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} fetchMessages={fetchMessages} />
                 </>
-            )}
-            
-        </Text>
-            <Box display="flex" flexDir="column" justifyContent="flex-end" p={3} bg={"#E8E8E8"} w="100%" h="90%" borderRadius="lg" overflowy="hidden" 
+              )}
+
+            </Text>
+            <Box display="flex" flexDir="column" justifyContent="flex-end" p={3} bg={"#E8E8E8"} w="100%" h="90%" borderRadius="lg" overflowy="hidden"
             >
-                {loading ? (<Spinner size="xl" w={20} h={20} alignSelf="center" margin="auto"/>):(
+              {loading ? (<Spinner size="xl" w={20} h={20} alignSelf="center" margin="auto" />) : (
                 <div className='messages'>
-                    <ScrollableChat messages={messages} />
-                
+                  <ScrollableChat messages={messages} />
+
                 </div>)}
-                <FormControl onKeyDown={sendMessage} isRequired mt={3}>
-  {istyping ? (
-    <Lottie
-      options={defaultOptions}
-      width={70}
-      style={{ marginTop: 20, marginLeft: 20, width: 70 }}
-      animationData={animation}
-      loop={true}
-    />
-  ) : (
-    <></>
-  )}
-  <Input
-    variant="filled"
-    bg="#E0E0E0"
-    placeholder="Enter a message"
-    onChange={typingHandler}
-    value={newMessage}
-  />
-</FormControl>
+              <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+                {istyping ? (
+                  <Lottie
+                    options={defaultOptions}
+                    width={70}
+                    style={{ marginTop: 20, marginLeft: 20, width: 70 }}
+                    animationData={animation}
+                    loop={true}
+                  />
+                ) : (
+                  <></>
+                )}
+                <InputGroup>
+                  <Input
+                    variant="filled"
+                    bg="#E0E0E0"
+                    placeholder="Enter a message"
+                    onChange={typingHandler}
+                    value={newMessage}
+                    onKeyDown={(event) => sendMessage(event)}
+                  />
+                  <InputRightElement width='4.5rem'>
+                    <Button h='1.75rem' size='sm' onClick={() => sendMessage()}>
+                      Send
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+
+              </FormControl>
 
 
             </Box>
-        </>):
-        (
+          </>) :
+          (
             <Box display="flex" alignItems="center" justifyContent="center" h="100%" >
-                <Text fontSize="3xl" pb={3} >
-                    Click on user to start chatting
-                </Text>
+              <Text fontSize="3xl" pb={3} >
+                Click on user to start chatting
+              </Text>
 
             </Box>
-        )
-     }
+          )
+      }
     </>
   )
 };
